@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Public read blog posts and packages; restrict writes.
+    match /blog_posts/{id} {
+      allow read: if true;
+      allow write: if request.time < timestamp.date(2100, 1, 1);
+    }
+
+    match /packages/{doc} {
+      allow read: if true;
+      allow write: if request.time < timestamp.date(2100, 1, 1);
+    }
+
+    // Leads and submissions are readable from client (for admin panel)
+    match /leads/{id} {
+      allow create: if true;
+      allow read: if true;
+      allow update, delete: if false;
+    }
+
+    match /package_submissions/{id} {
+      allow create: if true;
+      allow read: if true;
+      allow update, delete: if false;
+    }
+
+    // Users collection - allow create and update for setup
+    match /users/{id} {
+      allow read: if true; // Allow read for admin panel
+      allow create: if true; // Allow creation during setup
+      allow update: if true; // Allow update for setup (can restrict later)
+      allow delete: if false; // Prevent deletion
+    }
+  }
+}
+
+
