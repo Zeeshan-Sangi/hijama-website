@@ -69,9 +69,11 @@ Thumbs.db
 # Sensitive files with API keys and secrets
 functions/api.js
 functions/index.js
+functions/index-v2.js
 hijama-backend/config/stripe-keys.js
 config/stripe-keys.js
 tools/fetch-firebase-config.js
 tools/setup-env.js
 .env
+ENV_FORMAT.txt
 
