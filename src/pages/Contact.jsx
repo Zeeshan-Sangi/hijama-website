@@ -82,9 +82,9 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email Address',
-      details: ['contact@westendhijamaclinic.co.uk'],
+      details: ['info@westendhijamaclinic.co.uk'],
       description: 'Send us your questions anytime',
-      link: 'mailto:contact@westendhijamaclinic.co.uk'
+      link: 'mailto:info@westendhijamaclinic.co.uk'
     },
     {
       icon: MapPin,

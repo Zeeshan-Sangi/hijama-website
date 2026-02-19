@@ -3,9 +3,15 @@
     import { motion, AnimatePresence } from 'framer-motion';
     import { Calendar } from '@/components/ui/calendar';
 // Removed StripePayment import - using redirect to Stripe Checkout instead
-import { Check, ArrowRight, ArrowLeft, User, Mail, Phone, Calendar as CalendarIcon, Clock, Tag, CreditCard, Shield, Heart, Brain, Sparkles, Zap, Activity, MoreHorizontal } from 'lucide-react';
+import { Check, ArrowRight, ArrowLeft, User, Mail, Phone, Calendar as CalendarIcon, Clock, Tag, CreditCard, Landmark, Heart, Brain, Sparkles, Zap, Activity, MessageCircle, Hash, FileText } from 'lucide-react';
 
-    const timeSlots = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
+    const timeSlots = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
+    const formatTimeAMPM = (time24) => {
+      const [h, m] = time24.split(':').map(Number);
+      const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      const ampm = h < 12 ? 'AM' : 'PM';
+      return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+    };
 
     const BookingWidget = () => {
       const [step, setStep] = useState(1);
@@ -14,48 +20,18 @@ import { Check, ArrowRight, ArrowLeft, User, Mail, Phone, Calendar as CalendarIc
       const [selectedPackage, setSelectedPackage] = useState(null);
       const [selectedDate, setSelectedDate] = useState(null);
       const [selectedTime, setSelectedTime] = useState(null);
-      const [userDetails, setUserDetails] = useState({ name: '', email: '', phone: '' });
+      const [userDetails, setUserDetails] = useState({ name: '', email: '', phone: '', age: '', notes: '' });
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
 
   const reasonOptions = [
-    { 
-      label: 'Chronic Pain Relief', 
-      icon: Heart,
-      gradient: 'from-red-500 to-pink-500',
-      bgGradient: 'from-red-50 to-pink-50'
-    },
-    { 
-      label: 'Anxiety/Stress/Panic Attacks', 
-      icon: Brain,
-      gradient: 'from-purple-500 to-indigo-500',
-      bgGradient: 'from-purple-50 to-indigo-50'
-    },
-    { 
-      label: 'Spiritual / Sunnah Practice', 
-      icon: Sparkles,
-      gradient: 'from-amber-500 to-orange-500',
-      bgGradient: 'from-amber-50 to-orange-50'
-    },
-    { 
-      label: 'General Detox & Energy', 
-      icon: Zap,
-      gradient: 'from-green-500 to-emerald-500',
-      bgGradient: 'from-green-50 to-emerald-50'
-    },
-    { 
-      label: 'Sports Recovery', 
-      icon: Activity,
-      gradient: 'from-blue-500 to-cyan-500',
-      bgGradient: 'from-blue-50 to-cyan-50'
-    },
-    { 
-      label: 'Other', 
-      icon: MoreHorizontal,
-      gradient: 'from-gray-500 to-slate-500',
-      bgGradient: 'from-gray-50 to-slate-50'
-    }
+    { label: 'Headaches and tension', icon: Brain },
+    { label: 'Muscle and joint discomfort', icon: Heart },
+    { label: 'Fatigue and low energy', icon: Zap },
+    { label: 'Stress and mental overload', icon: Brain },
+    { label: 'Sports recovery', icon: Activity },
+    { label: 'General wellness', icon: Sparkles },
   ];
 
       useEffect(() => {
@@ -78,18 +54,10 @@ import { Check, ArrowRight, ArrowLeft, User, Mail, Phone, Calendar as CalendarIc
       };
 
       const handleNextStep = () => {
-        if (step === 1 && !selectedReason) {
-          return;
-        }
-        if (step === 2 && (!selectedDate || !selectedTime)) {
-      return;
-    }
-        if (step === 3 && !selectedPackage) {
-          return;
-        }
-        if (step === 4 && (!userDetails.name || !userDetails.email)) {
-          return;
-        }
+        if (step === 1 && !selectedReason) return;
+        if (step === 2 && !selectedPackage) return;
+        if (step === 3 && (!selectedDate || !selectedTime)) return;
+        if (step === 4 && (!userDetails.name || !userDetails.email)) return;
         setStep(step + 1);
       };
       
@@ -129,6 +97,8 @@ import { Check, ArrowRight, ArrowLeft, User, Mail, Phone, Calendar as CalendarIc
             name: userDetails.name,
             email: userDetails.email,
             phone: userDetails.phone || '',
+            age: userDetails.age || '',
+            notes: userDetails.notes || '',
             reason: typeof selectedReason === 'string' ? selectedReason : (selectedReason?.label || String(selectedReason || '')),
             package: selectedPackage?.title,
             packagePrice: selectedPackage?.price,
@@ -266,6 +236,8 @@ throw new Error('Invalid payment amount');
           name: userDetails.name,
           email: userDetails.email,
           phone: userDetails.phone,
+          age: userDetails.age,
+          notes: userDetails.notes,
           reason: typeof selectedReason === 'string' ? selectedReason : (selectedReason?.label || String(selectedReason || '')),
           package: selectedPackage.title,
       packagePrice: selectedPackage.price,
@@ -319,7 +291,7 @@ throw new Error('Invalid payment amount');
         setSelectedPackage(null);
         setSelectedDate(null);
         setSelectedTime(null);
-        setUserDetails({ name: '', email: '', phone: '' });
+        setUserDetails({ name: '', email: '', phone: '', age: '', notes: '' });
         setPaymentMethod('card');
         setIsProcessingPayment(false);
         setPaymentError(null);
@@ -345,15 +317,11 @@ throw new Error('Invalid payment amount');
                     return (
                       <motion.button
                         key={`reason-${index}-${reason.label}`}
-                        onClick={() => {
-                          const reasonLabel = String(reason.label);
-                          console.log('Selecting reason:', reasonLabel);
-                          setSelectedReason(reasonLabel);
-                        }}
+                        onClick={() => setSelectedReason(reason.label)}
                         className={`relative p-8 rounded-2xl cursor-pointer border-2 transition-all duration-300 text-left group overflow-hidden ${
                           isSelected
-                            ? `border-[#13aea1] bg-[#13aea1] text-white shadow-2xl shadow-[#13aea1]/30 scale-105` 
-                            : `border-gray-200 bg-white hover:border-[#13aea1] hover:shadow-xl text-gray-800 hover:scale-105`
+                            ? 'border-[#13aea1] bg-[#13aea1] text-white shadow-2xl shadow-[#13aea1]/30 scale-105'
+                            : 'border-gray-200 bg-white hover:border-[#13aea1] hover:shadow-xl text-gray-800 hover:scale-105'
                         }`}
                         whileHover={{ y: -5, scale: isSelected ? 1.05 : 1.03 }}
                         whileTap={{ scale: 0.98 }}
@@ -361,29 +329,21 @@ throw new Error('Invalid payment amount');
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        
-                        {/* Check icon */}
                         {isSelected && (
-                        <motion.div
+                          <motion.div
                             initial={{ scale: 0, rotate: -180 }}
                             animate={{ scale: 1, rotate: 0 }}
                             className="absolute -top-3 -right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg z-10"
-                        >
+                          >
                             <Check size={24} className="text-[#13aea1]" />
-                        </motion.div>
-                      )}
-                        
-                        {/* Icon */}
+                          </motion.div>
+                        )}
                         <div className="mb-4">
-                          <IconComponent size={32} className={isSelected ? 'text-white' : `text-gray-600 group-hover:text-[#13aea1] transition-colors`} />
+                          <IconComponent size={32} className={isSelected ? 'text-white' : 'text-gray-600 group-hover:text-[#13aea1] transition-colors'} />
                         </div>
-                        
-                        {/* Text */}
                         <span className={`text-lg font-bold leading-tight block ${isSelected ? 'text-white' : 'text-gray-800 group-hover:text-[#13aea1] transition-colors'}`}>
                           {reason.label}
                         </span>
-                        
-                        {/* Decorative corner accent */}
                         {isSelected && (
                           <motion.div
                             initial={{ scale: 0 }}
@@ -400,7 +360,34 @@ throw new Error('Invalid payment amount');
           case 2:
             return (
               <motion.div key="step2" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="w-full">
-                <h3 className="text-3xl font-bold text-center mb-8 text-[#2c3e50] max-w-4xl mx-auto px-4">2. Select Date & Time</h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 text-[#2c3e50]">Choose session type</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {packages.map((pkg) => (
+                    <motion.div
+                      key={pkg.name}
+                      onClick={() => handlePackageSelect(pkg)}
+                      className={`relative p-6 rounded-xl cursor-pointer border-2 transition-all duration-300 bg-white shadow-sm ${selectedPackage?.name === pkg.name ? 'border-[#13aea1] shadow-md' : 'border-gray-200 hover:border-gray-300'}`}
+                      whileHover={{ y: -2 }}
+                    >
+                      <h4 className="text-xl font-bold text-[#2c3e50]">{pkg.title}</h4>
+                      <p className="text-3xl font-extrabold text-[#2c3e50] my-4">{pkg.price}</p>
+                      <ul className="space-y-2 text-sm text-[#2c3e50]">
+                        {pkg.services.map((service, i) => (
+                          <li key={i} className="flex items-center gap-2">
+                            <Check size={16} className="text-[#13aea1] shrink-0" />
+                            <span>{service}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          case 3:
+            return (
+              <motion.div key="step3" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="w-full">
+                <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 text-[#2c3e50] max-w-4xl mx-auto px-4">Pick date and time</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <motion.div initial={{opacity: 0, x: -20}} animate={{opacity: 1, x: 0}} transition={{delay: 0.1}}>
                      <Calendar
@@ -422,7 +409,7 @@ throw new Error('Invalid payment amount');
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          {time}
+                          {formatTimeAMPM(time)}
                         </motion.button>
                       ))}
                     </div>
@@ -430,124 +417,81 @@ throw new Error('Invalid payment amount');
                 </div>
               </motion.div>
             );
-          case 3:
-            return (
-              <motion.div key="step3" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="w-full">
-                <h3 className="text-3xl font-bold text-center mb-8 text-[#2c3e50] max-w-4xl mx-auto px-4">3. Choose Your Package</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {packages.map((pkg) => (
-                    <motion.div
-                      key={pkg.name}
-                      onClick={() => handlePackageSelect(pkg)}
-                      className={`relative p-6 rounded-2xl cursor-pointer border-4 transition-all duration-300 ${selectedPackage?.name === pkg.name ? 'border-[#13aea1] bg-white scale-105 shadow-custom' : 'border-gray-200 bg-gray-50 hover:border-gray-300'}`}
-                      whileHover={{ y: -5 }}
-                    >
-                      {selectedPackage?.name === pkg.name && (
-                        <motion.div
-                          layoutId="check-icon"
-                          className="absolute -top-4 -right-4 w-8 h-8 bg-[#13aea1] rounded-full flex items-center justify-center text-white"
-                        >
-                          <Check size={20} />
-                        </motion.div>
-                      )}
-                      <h4 className="text-2xl font-bold text-[#13aea1]">{pkg.title}</h4>
-                      <p className="text-3xl font-extrabold text-[#2c3e50] my-3">{pkg.price}</p>
-                      <ul className="space-y-2 text-sm text-[#7f8c8d]">
-                        {pkg.services.map((service, i) => (
-                          <li key={i} className="flex items-center">
-                            <Check size={14} className="text-[#13aea1] mr-2 flex-shrink-0" />
-                            <span>{service}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            );
           case 4:
             return (
-              <motion.div key="step4" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="w-full max-w-lg mx-auto">
-                <h3 className="text-3xl font-bold text-center mb-8 text-[#2c3e50] max-w-4xl mx-auto px-4">4. Your Details</h3>
-                <form onSubmit={handleSubmit} className="space-y-6">
+              <motion.div key="step4" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="w-full max-w-2xl mx-auto">
+                <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 text-[#2c3e50]">Enter details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                    <input type="text" name="name" placeholder="Full Name" value={userDetails.name} onChange={handleInputChange} required className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#13aea1]"/>
+                    <input type="text" name="name" placeholder="Full Name" value={userDetails.name} onChange={handleInputChange} required className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#13aea1] bg-white"/>
                   </div>
-                   <div className="relative">
+                  <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                    <input type="email" name="email" placeholder="Email Address" value={userDetails.email} onChange={handleInputChange} required className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#13aea1]"/>
+                    <input type="email" name="email" placeholder="Email Address" value={userDetails.email} onChange={handleInputChange} required className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#13aea1] bg-white"/>
                   </div>
-                   <div className="relative">
+                  <div className="relative">
                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                    <input type="tel" name="phone" placeholder="Phone Number (Optional)" value={userDetails.phone} onChange={handleInputChange} className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#13aea1]"/>
+                    <input type="tel" name="phone" placeholder="Phone Number" value={userDetails.phone} onChange={handleInputChange} className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#13aea1] bg-white"/>
                   </div>
-                </form>
+                  <div className="relative">
+                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                    <input type="number" name="age" placeholder="Age" value={userDetails.age} onChange={handleInputChange} min="1" max="120" className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#13aea1] bg-white"/>
+                  </div>
+                  <div className="md:col-span-2 relative">
+                    <MessageCircle className="absolute left-4 top-4 text-gray-400" size={20} />
+                    <textarea name="notes" placeholder="Additional Notes or Special Requirements" value={userDetails.notes} onChange={handleInputChange} rows={3} className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#13aea1] bg-white resize-none"/>
+                  </div>
+                </div>
               </motion.div>
             );
           case 5:
              return (
               <motion.div key="step5" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="w-full max-w-lg mx-auto">
-                <h3 className="text-3xl font-bold text-center mb-8 text-[#2c3e50] max-w-4xl mx-auto px-4">5. Secure Payment</h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 text-[#2c3e50]">Confirm booking</h3>
                 
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-lg font-semibold text-gray-700">Booking Summary</span>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">{selectedPackage?.title} Package</span>
-                      <span className="font-semibold">{selectedPackage?.price}</span>
+                <div className="bg-gray-100 border border-gray-200 rounded-xl p-6 mb-6">
+                  <h4 className="text-lg font-bold text-[#2c3e50] mb-4">Booking Summary</h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[#2c3e50]">{selectedPackage?.title} Package</span>
+                      <span className="font-semibold text-[#2c3e50]">{selectedPackage?.price}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Date & Time</span>
-                      <span className="font-semibold">{selectedDate?.toLocaleDateString()} at {selectedTime}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[#2c3e50]">Date & Time</span>
+                      <span className="font-semibold text-[#2c3e50]">{selectedDate?.toLocaleDateString()} at {selectedTime && formatTimeAMPM(selectedTime)}</span>
                     </div>
-                    <div className="border-t pt-2 mt-2">
-                      <div className="flex justify-between text-lg font-bold text-[#13aea1]">
-                        <span>Partial Payment Required</span>
-                        <span>{selectedPackage?.partialPayment}</span>
+                    <div className="bg-[#13aea1] rounded-lg p-4 mt-4">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-white">Partial Payment Required</span>
+                        <span className="font-bold text-white">{selectedPackage?.partialPayment}</span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">Remaining balance to be paid on arrival</p>
+                      <p className="text-xs text-white/90 mt-1">Remaining balance to be paid on arrival</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-3 p-4 border border-gray-300 rounded-lg bg-white">
-                    <CreditCard className="text-[#13aea1]" size={24} />
-                    <div>
-                      <p className="font-semibold text-gray-800">Credit/Debit Card</p>
+                  <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-colors ${paymentMethod === 'card' ? 'border-[#13aea1] bg-white' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+                    <input type="radio" name="paymentMethod" value="card" checked={paymentMethod === 'card'} onChange={(e) => setPaymentMethod(e.target.value)} className="sr-only" />
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === 'card' ? 'border-[#13aea1] bg-[#13aea1]' : 'border-gray-300'}`}>
+                      {paymentMethod === 'card' && <Check size={12} className="text-white" strokeWidth={3} />}
+                    </div>
+                    <CreditCard className="text-[#13aea1] shrink-0" size={24} />
+                    <div className="flex-1">
+                      <p className="font-semibold text-[#2c3e50]">Credit/Debit Card</p>
                       <p className="text-sm text-gray-500">Secure payment via Stripe</p>
                     </div>
-                    <div className="ml-auto">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        value="card" 
-                        checked={paymentMethod === 'card'}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="text-[#13aea1] focus:ring-[#13aea1]"
-                      />
-                    </div>
-                  </div>
+                  </label>
                   
-                  <div className="flex items-center space-x-3 p-4 border border-gray-300 rounded-lg bg-gray-50 opacity-60">
-                    <Shield className="text-gray-400" size={24} />
-                    <div>
-                      <p className="font-semibold text-gray-600">Bank Transfer</p>
+                  <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl bg-gray-50 opacity-70 cursor-not-allowed">
+                    <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0" />
+                    <Landmark className="text-gray-400 shrink-0" size={24} />
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-500">Bank Transfer</p>
                       <p className="text-sm text-gray-400">Coming soon</p>
                     </div>
-                    <div className="ml-auto">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        value="bank" 
-                        disabled
-                        className="text-gray-400"
-                      />
-                    </div>
-                  </div>
+                  </label>
                 </div>
 
                 {paymentMethod === 'card' && (
@@ -557,16 +501,16 @@ throw new Error('Invalid payment amount');
                       disabled={isProcessingPayment}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full bg-[#13aea1] text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-[#0e8c81] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      className="w-full bg-[#13aea1] text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-[#0e8c81] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isProcessingPayment ? (
                         <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                           Processing...
                         </>
                       ) : (
                         <>
-                          <CreditCard className="mr-2" size={20} />
+                          <FileText className="shrink-0" size={20} />
                           Pay {selectedPackage?.partialPayment} Now
                         </>
                       )}
@@ -590,7 +534,7 @@ throw new Error('Invalid payment amount');
                           </div>
                           <div className="ml-3 flex-1">
                             <p className="text-sm font-medium text-red-800">{paymentError}</p>
-                            <p className="mt-1 text-xs text-red-600">If this problem continues, please contact us at <a href="mailto:contact@westendhijamaclinic.co.uk" className="underline hover:text-red-800">contact@westendhijamaclinic.co.uk</a></p>
+                            <p className="mt-1 text-xs text-red-600">If this problem continues, please contact us at <a href="mailto:info@westendhijamaclinic.co.uk" className="underline hover:text-red-800">info@westendhijamaclinic.co.uk</a></p>
                           </div>
                       </div>
                       </motion.div>
@@ -613,7 +557,7 @@ throw new Error('Invalid payment amount');
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-left space-y-4">
                    <div className="flex items-center"><Tag className="text-[#13aea1] mr-3" size={20}/> <span className="font-semibold">{selectedPackage?.title} Package - {selectedPackage?.price}</span></div>
                    <div className="flex items-center"><CalendarIcon className="text-[#13aea1] mr-3" size={20}/> <span className="font-semibold">{selectedDate?.toLocaleDateString()}</span></div>
-                   <div className="flex items-center"><Clock className="text-[#13aea1] mr-3" size={20}/> <span className="font-semibold">{selectedTime}</span></div>
+                   <div className="flex items-center"><Clock className="text-[#13aea1] mr-3" size={20}/> <span className="font-semibold">{selectedTime && formatTimeAMPM(selectedTime)}</span></div>
                    <div className="flex items-center"><CreditCard className="text-[#13aea1] mr-3" size={20}/> <span className="font-semibold">Partial Payment: {selectedPackage?.partialPayment}</span></div>
                 </div>
                  <motion.button
@@ -641,41 +585,40 @@ throw new Error('Invalid payment amount');
                 transition={{ duration: 0.8 }}
                 className="text-center mb-12"
               >
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-                  Book Your Session in <span className="gradient-text">5 Easy Steps</span>
+                <h2 className="text-3xl md:text-4xl font-bold text-[#2c3e50] mb-2">
+                  Book Your Session
                 </h2>
-                <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                  Experience our healing therapies by booking your appointment in just a few clicks.
+                <p className="text-base text-gray-600">
+                  Complete your booking in 5 simple steps.
                 </p>
               </motion.div>
             
               <div className="min-h-[500px] flex flex-col items-center">
                   {step < 6 && (
                     <div className="w-full max-w-3xl mx-auto mb-12">
-                      <div className="flex justify-between items-center relative">
-                        <div className="absolute left-0 top-1/2 w-full h-1 bg-gray-200 -translate-y-1/2">
-                          <motion.div
-                            className="h-full bg-[#13aea1]"
-                            initial={{ width: '0%' }}
-                            animate={{ width: `${((step - 1) / 4) * 100}%` }}
-                            transition={{ duration: 0.5, ease: 'easeInOut' }}
-                          />
-                        </div>
+                      <div className="flex items-center justify-between relative">
+                        <div className="absolute left-0 right-0 top-5 h-0.5 bg-gray-200 -translate-y-1/2" />
+                        <motion.div
+                          className="absolute left-0 top-5 h-0.5 -translate-y-1/2 bg-[#13aea1] origin-left"
+                          initial={{ width: '0%' }}
+                          animate={{ width: `${((step - 1) / 4) * 100}%` }}
+                          transition={{ duration: 0.3 }}
+                        />
                         {[1, 2, 3, 4, 5].map((s) => (
-                          <div key={`step-indicator-${s}`} className="relative z-10">
+                          <div key={`step-indicator-${s}`} className="relative z-10 flex flex-col items-center">
                             <motion.div
                               className="w-10 h-10 rounded-full flex items-center justify-center font-bold border-2"
                               animate={{
-                                backgroundColor: step >= s ? '#13aea1' : '#ffffff',
+                                backgroundColor: step > s ? '#13aea1' : step === s ? '#13aea1' : '#ffffff',
                                 borderColor: step >= s ? '#13aea1' : '#d1d5db',
                                 color: step >= s ? '#ffffff' : '#6b7280',
                               }}
                               transition={{ duration: 0.3 }}
                             >
-                              {step > s ? <Check size={20}/> : s}
+                              {step > s ? <Check size={18} strokeWidth={3} /> : s}
                             </motion.div>
-                            <p className={`absolute -bottom-7 text-sm font-semibold text-center left-1/2 transform -translate-x-1/2 whitespace-nowrap ${step >= s ? 'text-[#13aea1]' : 'text-gray-500'}`}>
-                              {s === 1 ? 'Reason' : s === 2 ? 'Date & Time' : s === 3 ? 'Package' : s === 4 ? 'Details' : 'Payment'}
+                            <p className={`mt-2 text-xs font-semibold text-center whitespace-nowrap ${step >= s ? 'text-[#13aea1]' : 'text-gray-500'}`}>
+                              {s === 1 ? 'Concern' : s === 2 ? 'Session Type' : s === 3 ? 'Date & Time' : s === 4 ? 'Details' : 'Confirm'}
                             </p>
                           </div>
                         ))}

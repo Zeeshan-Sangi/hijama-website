@@ -207,8 +207,8 @@ const BookingSuccess = () => {
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500">
               Need help? Contact us at{' '}
-              <a href="mailto:support@westendhijama.com" className="text-[#13aea1] hover:underline">
-                support@westendhijama.com
+              <a href="mailto:info@westendhijamaclinic.co.uk" className="text-[#13aea1] hover:underline">
+                info@westendhijamaclinic.co.uk
               </a>
             </p>
           </div>

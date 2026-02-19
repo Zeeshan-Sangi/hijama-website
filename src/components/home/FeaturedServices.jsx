@@ -13,7 +13,7 @@ const FeaturedServices = () => {
     });
   };
 
-  const featuredServices = servicesData.slice(0, 3).map(s => ({
+  const featuredServices = servicesData.slice(0, 4).map(s => ({
     title: s.title,
     description: s.description,
     image: s.imageUrl,
@@ -35,7 +35,7 @@ const FeaturedServices = () => {
             We offer a curated selection of cupping therapies designed to restore balance, alleviate discomfort, and promote natural healing.
           </p>
         </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {featuredServices.map((service, index) => (
             <motion.div
               key={index}

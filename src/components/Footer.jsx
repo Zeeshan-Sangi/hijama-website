@@ -21,6 +21,7 @@ const Footer = () => {
       { name: 'Home', path: '/' },
       { name: 'About Us', path: '/about' },
       { name: 'Our Services', path: '/services' },
+      { name: 'Contact page', path: '/contact' },
       { name: 'Blog', path: '/blog' },
     ],
     'Services': [
@@ -40,7 +41,7 @@ const Footer = () => {
   const contactInfo = [
     { icon: <MapPin size={16} className="text-[#13aea1] mt-1" />, text: '123 Wellness St, West End, London', link: null },
     { icon: <Phone size={16} className="text-[#13aea1] mt-1" />, text: '+44 7535 062244', link: 'tel:+447535062244' },
-    { icon: <Mail size={16} className="text-[#13aea1] mt-1" />, text: 'contact@westendhijamaclinic.co.uk', link: 'mailto:contact@westendhijamaclinic.co.uk' },
+    { icon: <Mail size={16} className="text-[#13aea1] mt-1" />, text: 'info@westendhijamaclinic.co.uk', link: 'mailto:info@westendhijamaclinic.co.uk' },
   ];
 
   return (

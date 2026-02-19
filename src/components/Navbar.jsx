@@ -2,7 +2,7 @@
     import React, { useState, useEffect } from 'react';
     import { Link, useLocation, useNavigate } from 'react-router-dom';
     import { motion, AnimatePresence } from 'framer-motion';
-    import { Menu, X, Phone, Mail, UserCog } from 'lucide-react';
+    import { Menu, X, Phone, Mail, User } from 'lucide-react';
     import { useToast } from '@/components/ui/use-toast';
 
     const Navbar = ({ onBookAppointment }) => {
@@ -56,9 +56,9 @@
                   <Phone size={14} />
                   <span>+44 7535 062244</span>
                 </a>
-                <a href="mailto:contact@westendhijamaclinic.co.uk" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                <a href="mailto:info@westendhijamaclinic.co.uk" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
                   <Mail size={14} />
-                  <span>contact@westendhijamaclinic.co.uk</span>
+                  <span>info@westendhijamaclinic.co.uk</span>
                 </a>
               </div>
               <div className="text-sm">
@@ -70,11 +70,7 @@
           <motion.nav
             initial={{ y: 0 }}
             animate={{ y: 0 }}
-            className={`w-full transition-all duration-300 ${
-              isScrolled || !isHomePage
-                ? 'bg-white/95 backdrop-blur-md shadow-lg' 
-                : 'bg-white/95 backdrop-blur-md shadow-lg'
-            }`}
+            className="w-full transition-all duration-300 bg-white/95 backdrop-blur-md shadow-lg"
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between h-20 w-full py-2">
@@ -85,11 +81,11 @@
                     className="h-16 md:h-20 w-auto object-contain pt-1 pb-1"
                   />
                   <div className="flex flex-col justify-center">
-                        <h2 className={`text-2xl font-bold transition-colors duration-300 text-[#2c3e50]`} style={{ fontFamily: "'Dancing Script', cursive" }}>
+                        <h2 className="text-2xl font-bold text-[#2c3e50]" style={{ fontFamily: "'Dancing Script', cursive" }}>
                           Westend Hijama Clinic
                         </h2>
-                    <p className={`text-sm transition-colors duration-300 text-[#7f8c8d]`}>
-                      Traditional Healing
+                    <p className="text-sm text-[#7f8c8d]">
+                      Wellness Clinic
                     </p>
                   </div>
                 </Link>
@@ -154,14 +150,14 @@
                     whileTap={{ scale: 0.95 }}
                     className="bg-[#13aea1] text-white px-6 py-2 rounded-full font-medium hover:bg-[#0e8c81] transition-colors duration-300 flex items-center whitespace-nowrap"
                   >
-                    <UserCog size={16} className="mr-2" />
+                    <User size={16} className="mr-2" />
                     Admin
                   </motion.button>
                 </div>
 
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className={`lg:hidden p-2 rounded-lg z-50 transition-colors duration-300 text-[#2c3e50] hover:bg-gray-100`}
+                  className="lg:hidden p-2 rounded-lg z-50 transition-colors duration-300 text-[#2c3e50] hover:bg-gray-100"
                 >
                   {isOpen ? <X size={28} /> : <Menu size={28} />}
                 </button>

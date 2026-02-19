@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import HeroSection from '@/components/home/HeroSection';
+import WestendStandards from '@/components/home/WestendStandards';
 import FeaturedServices from '@/components/home/FeaturedServices';
 import AboutPreview from '@/components/home/AboutPreview';
 import TreatmentBenefits from '@/components/home/TreatmentBenefits';
@@ -39,6 +40,7 @@ const Home = () => {
       </Helmet>
 
       <HeroSection />
+      <WestendStandards />
       <div id="booking-widget">
         <BookingWidget />
       </div>

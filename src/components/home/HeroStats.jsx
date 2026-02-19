@@ -5,18 +5,18 @@ import { Award, UserCheck, HeartHandshake } from 'lucide-react';
 const stats = [
   {
     icon: <Award className="w-8 h-8 text-[#13aea1]" />,
-    title: 'Ancient Healing Tradition',
-    description: 'Practicing a therapy method cherished for centuries for its natural benefits.',
+    title: 'Time-Tested Practice',
+    description: 'A therapy method practiced for centuries, delivered with modern clinical care.',
   },
   {
     icon: <UserCheck className="w-8 h-8 text-[#13aea1]" />,
     title: 'Certified Practitioners',
-    description: 'Our team consists of highly skilled and certified Hijama therapists.',
+    description: 'Our team consists of trained and certified professionals.',
   },
   {
     icon: <HeartHandshake className="w-8 h-8 text-[#13aea1]" />,
-    title: '1,000+ Revitalized Clients',
-    description: 'Trusted by a growing community for wellness and natural healing.',
+    title: 'Professional Care',
+    description: 'Trusted by clients seeking natural wellness solutions.',
   },
 ];
 
